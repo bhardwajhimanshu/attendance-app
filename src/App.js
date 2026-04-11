@@ -51,6 +51,7 @@ if (!user) {
 
 return <Dashboard user={user} />;
 }
+
 function Dashboard({ user }) {
   const markAttendance = async (action) => {
     const res = await fetch("https://attendance-app-1p2d.onrender.com/attendance", {
