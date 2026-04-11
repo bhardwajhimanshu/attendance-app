@@ -53,7 +53,13 @@ app.post("/attendance", async (req, res) => {
     const { staffId, action } = req.body;
 
     const date = new Date().toISOString().split("T")[0];
-    const time = new Date().toLocaleTimeString();
+
+    const time = new Date().toLocaleTimeString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
 
     let record = await Attendance.findOne({ staffId, date });
 
