@@ -53,7 +53,11 @@ return <Dashboard user={user} />;
 }
 
 function Dashboard({ user }) {
-  const markAttendance = async (action) => {
+const markAttendance = async (action) => {
+  navigator.geolocation.getCurrentPosition(async (position) => {
+    const lat = position.coords.latitude;
+    const lng = position.coords.longitude;
+
     const res = await fetch("https://attendance-app-1p2d.onrender.com/attendance", {
       method: "POST",
       headers: {
@@ -62,12 +66,17 @@ function Dashboard({ user }) {
       body: JSON.stringify({
         staffId: user.id,
         action,
+        lat,
+        lng,
       }),
     });
 
     const data = await res.text();
     alert(data);
-  };
+  }, () => {
+    alert("Please allow location access");
+  });
+};
 
   return (
     <div

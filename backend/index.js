@@ -50,8 +50,36 @@ app.post("/login", (req, res) => {
 
 app.post("/attendance", async (req, res) => {
   try {
-    const { staffId, action } = req.body;
+    const { staffId, action, lat, lng } = req.body;
 
+    // 🏥 Hospital Location
+    const officeLat = 28.2070;
+    const officeLng = 77.8123;
+
+    // 📏 Distance formula
+    const getDistance = (lat1, lon1, lat2, lon2) => {
+      const R = 6371; // km
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+
+      const a =
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1 * Math.PI/180) *
+        Math.cos(lat2 * Math.PI/180) *
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return R * c;
+    };
+
+    const distance = getDistance(lat, lng, officeLat, officeLng);
+
+    // 🚫 Block if outside 0.1 km (100 meters)
+    if (distance > 0.1) {
+      return res.send("❌ You are outside hospital location");
+    }
+
+    // ✅ Continue attendance logic
     const date = new Date().toISOString().split("T")[0];
 
     const time = new Date().toLocaleTimeString("en-IN", {
@@ -64,12 +92,7 @@ app.post("/attendance", async (req, res) => {
     let record = await Attendance.findOne({ staffId, date });
 
     if (!record) {
-      record = new Attendance({
-        staffId,
-        date,
-        checkIn: "",
-        checkOut: "",
-      });
+      record = new Attendance({ staffId, date });
     }
 
     if (action === "IN") record.checkIn = time;
@@ -77,13 +100,12 @@ app.post("/attendance", async (req, res) => {
 
     await record.save();
 
-    res.send(`Saved ${action} at ${time}`);
+    res.send(`✅ ${action} marked at ${time}`);
   } catch (err) {
     console.error(err);
     res.status(500).send("Error saving attendance");
   }
 });
-
 app.get("/admin", async (req, res) => {
   try {
     const data = await Attendance.find();
