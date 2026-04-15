@@ -216,66 +216,65 @@ const downloadExcel = () => {
 
   saveAs(file, "Monthly_Attendance_Report.xlsx");
 };
+return (
+  <div>
+    <h3>Admin Panel</h3>
 
-  return (
-    <div>
-      <h3>Admin Panel</h3>
-<div style={{ marginBottom: "10px" }}>
-  <button onClick={loadData}>Load Attendance</button>
+    {/* Buttons */}
+    <div style={{ marginBottom: "10px" }}>
+      <button onClick={loadData}>Load Attendance</button>
 
-  <button onClick={loadMonthlyReport} style={{ marginLeft: "10px" }}>
-    Monthly Report
-  </button>
+      <button onClick={loadMonthlyReport} style={{ marginLeft: "10px" }}>
+        Monthly Report
+      </button>
 
-  <button onClick={downloadExcel} style={{ marginLeft: "10px" }}>
-    Download Excel
-  </button>
-</div>
+      <button onClick={downloadExcel} style={{ marginLeft: "10px" }}>
+        Download Excel
+      </button>
+    </div>
 
+    {/* Attendance Table */}
+    <table border="1" style={{ marginTop: "20px" }}>
+      <thead>
+        <tr>
+          <th>Staff Name</th>
+          <th>Date</th>
+          <th>Check In</th>
+          <th>Check Out</th>
+        </tr>
+      </thead>
+      <tbody>
+        {data.map((d, i) => (
+          <tr key={i}>
+            <td>{staffMap[d.staffId] || d.staffId}</td>
+            <td>{d.date}</td>
+            <td>{d.checkIn}</td>
+            <td>{d.checkOut}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
 
-      {/* ✅ Attendance Table */}
+    {/* ✅ Monthly Report MUST be INSIDE SAME DIV */}
+    {report && (
       <table border="1" style={{ marginTop: "20px" }}>
         <thead>
           <tr>
             <th>Staff Name</th>
-            <th>Date</th>
-            <th>Check In</th>
-            <th>Check Out</th>
+            <th>Present Days</th>
+            <th>Absent Days</th>
           </tr>
         </thead>
         <tbody>
-          {data.map((d, i) => (
-            <tr key={i}>
-              <td>{staffMap[d.staffId] || d.staffId}</td>
-              <td>{d.date}</td>
-              <td>{d.checkIn}</td>
-              <td>{d.checkOut}</td>
+          {Object.keys(report).map((id) => (
+            <tr key={id}>
+              <td>{staffMap[id] || id}</td>
+              <td>{report[id].present}</td>
+              <td>{report[id].absent}</td>
             </tr>
           ))}
         </tbody>
       </table>
-
-      {/* ✅ Monthly Report Table (SEPARATE) */}
-      {report && (
-        <table border="1" style={{ marginTop: "20px" }}>
-          <thead>
-            <tr>
-              <th>Staff Name</th>
-              <th>Present Days</th>
-              <th>Absent Days</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Object.keys(report).map((id) => (
-              <tr key={id}>
-                <td>{staffMap[id] || id}</td>
-                <td>{report[id].present}</td>
-                <td>{report[id].absent}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </div>
-  );
-}
+    )}
+  </div>
+);
