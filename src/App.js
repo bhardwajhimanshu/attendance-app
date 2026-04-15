@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 export default function App() {
 	const [user, setUser] = useState(null);
@@ -48,11 +50,9 @@ if (!user) {
 			</div>
 			);
 }
-
-return <Dashboard user={user} />;
+return <Dashboard user={user} setUser={setUser} />;
 }
-
-function Dashboard({ user }) {
+function Dashboard({ user, setUser }) {
 const markAttendance = async (action) => {
   navigator.geolocation.getCurrentPosition(async (position) => {
     const lat = position.coords.latitude;
@@ -128,6 +128,19 @@ const markAttendance = async (action) => {
 
       {user.role === "admin" && <AdminPanel />}
     </div>
+<button
+  style={{
+    background: "#6c757d",
+    color: "white",
+    padding: "8px",
+    marginTop: "10px",
+    border: "none",
+    borderRadius: "5px",
+  }}
+  onClick={() => setUser(null)}
+>
+  Logout
+</button>
   );
 }
 function AdminPanel() {
@@ -166,6 +179,43 @@ function AdminPanel() {
     const result = await res.json();
     setReport(result);
   };
+const downloadExcel = () => {
+  if (!report) {
+    alert("Load report first");
+    return;
+  }
+
+  const staffMap = {
+    "1": "Himanshu",
+    "2": "Madhukar Gaur",
+    "3": "Santosh Kumar",
+    "4": "Munesh Singh",
+    "5": "Dr. K.K Sharma",
+    "6": "Zoya",
+    "7": "Somvati",
+  };
+
+  const excelData = Object.keys(report).map((id) => ({
+    Name: staffMap[id] || id,
+    Present: report[id].present,
+    Absent: report[id].absent,
+  }));
+
+  const worksheet = XLSX.utils.json_to_sheet(excelData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+  const excelBuffer = XLSX.write(workbook, {
+    bookType: "xlsx",
+    type: "array",
+  });
+
+  const file = new Blob([excelBuffer], {
+    type: "application/octet-stream",
+  });
+
+  saveAs(file, "Monthly_Attendance_Report.xlsx");
+};
 
   return (
     <div>
@@ -174,6 +224,9 @@ function AdminPanel() {
       <button onClick={loadData}>Load Attendance</button>
       <button onClick={loadMonthlyReport} style={{ marginLeft: "10px" }}>
         Monthly Report
+      </button>
+      <button onClick={downloadExcel} style={{ marginLeft: "10px" }}>
+  	Download Excel
       </button>
 
       {/* ✅ Attendance Table */}
