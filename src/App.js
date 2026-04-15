@@ -220,14 +220,18 @@ const downloadExcel = () => {
   return (
     <div>
       <h3>Admin Panel</h3>
+<div style={{ marginBottom: "10px" }}>
+  <button onClick={loadData}>Load Attendance</button>
 
-      <button onClick={loadData}>Load Attendance</button>
-      <button onClick={loadMonthlyReport} style={{ marginLeft: "10px" }}>
-        Monthly Report
-      </button>
-      <button onClick={downloadExcel} style={{ marginLeft: "10px" }}>
-  	Download Excel
-      </button>
+  <button onClick={loadMonthlyReport} style={{ marginLeft: "10px" }}>
+    Monthly Report
+  </button>
+
+  <button onClick={downloadExcel} style={{ marginLeft: "10px" }}>
+    Download Excel
+  </button>
+</div>
+
 
       {/* ✅ Attendance Table */}
       <table border="1" style={{ marginTop: "20px" }}>
