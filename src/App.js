@@ -130,59 +130,95 @@ const markAttendance = async (action) => {
     </div>
   );
 }
-
 function AdminPanel() {
-	const [data, setData] = useState([]);
+  const [data, setData] = useState([]);
+  const [report, setReport] = useState(null); // ✅ moved inside
 
-	// ✅ Define here (NOT inside map)
-	const staffMap = {
-		"1": "Himanshu",
-		"2": "Madhukar Gaur",
-		"3": "Santosh Kumar",
-		"4": "Munesh Singh",
-		"5": "Dr. K.K Sharma",
-		"6": "Zoya",
-		"7": "Somvati",
-	};
+  const staffMap = {
+    "1": "Himanshu Bhardwaj",
+    "2": "Madhukar Gaur",
+    "3": "Santosh Kumar",
+    "4": "Munesh Singh",
+    "5": "Dr. K.K Sharma",
+    "6": "Zoya",
+    "7": "Somvati",
+  };
 
-	const loadData = async () => {
-		try {
-			const res = await fetch("https://attendance-app-1p2d.onrender.com/admin");
-			const result = await res.json();
-			setData(result);
-		} catch (err) {
-			console.error(err);
-			alert("Error loading data");
-		}
-	};
+  const loadData = async () => {
+    try {
+      const res = await fetch("https://attendance-app-1p2d.onrender.com/admin");
+      const result = await res.json();
+      setData(result);
+    } catch (err) {
+      console.error(err);
+      alert("Error loading data");
+    }
+  };
 
-	return (
-			<div>
-			<h3>Admin Panel</h3>
-			<button onClick={loadData}>Load Attendance</button>
+  const loadMonthlyReport = async () => {
+    const month = prompt("Enter month (01-12)");
+    const year = prompt("Enter year (2026)");
 
-			<table border="1" style={{ marginTop: "20px" }}>
-			<thead>
-			<tr>
-			<th>Staff Name</th> {/* changed */}
-			<th>Date</th>
-			<th>Check In</th>
-			<th>Check Out</th>
-			</tr>
-			</thead>
+    const res = await fetch(
+      `https://attendance-app-1p2d.onrender.com/monthly-report?month=${month}&year=${year}`
+    );
 
-			<tbody>
-			{data.map((d, i) => (
-						<tr key={i}>
-						<td>{staffMap[d.staffId] || d.staffId}</td>
-						<td>{d.date}</td>
-						<td>{d.checkIn}</td>
-						<td>{d.checkOut}</td>
-						</tr>
-					    ))}
-	</tbody>
-		</table>
-		</div>
-		);
+    const result = await res.json();
+    setReport(result);
+  };
+
+  return (
+    <div>
+      <h3>Admin Panel</h3>
+
+      <button onClick={loadData}>Load Attendance</button>
+      <button onClick={loadMonthlyReport} style={{ marginLeft: "10px" }}>
+        Monthly Report
+      </button>
+
+      {/* ✅ Attendance Table */}
+      <table border="1" style={{ marginTop: "20px" }}>
+        <thead>
+          <tr>
+            <th>Staff Name</th>
+            <th>Date</th>
+            <th>Check In</th>
+            <th>Check Out</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((d, i) => (
+            <tr key={i}>
+              <td>{staffMap[d.staffId] || d.staffId}</td>
+              <td>{d.date}</td>
+              <td>{d.checkIn}</td>
+              <td>{d.checkOut}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* ✅ Monthly Report Table (SEPARATE) */}
+      {report && (
+        <table border="1" style={{ marginTop: "20px" }}>
+          <thead>
+            <tr>
+              <th>Staff Name</th>
+              <th>Present Days</th>
+              <th>Absent Days</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.keys(report).map((id) => (
+              <tr key={id}>
+                <td>{staffMap[id] || id}</td>
+                <td>{report[id].present}</td>
+                <td>{report[id].absent}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  );
 }
-

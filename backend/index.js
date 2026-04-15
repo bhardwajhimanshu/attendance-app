@@ -116,6 +116,42 @@ app.get("/admin", async (req, res) => {
     res.status(500).send("Error fetching attendance");
   }
 });
+app.get("/monthly-report", async (req, res) => {
+  try {
+    const { month, year } = req.query;
+
+    const totalDays = new Date(year, month, 0).getDate();
+
+    const data = await Attendance.find({
+      date: { $regex: `${year}-${month}` } // filter month
+    });
+
+    const report = {};
+
+    data.forEach((entry) => {
+      if (!report[entry.staffId]) {
+        report[entry.staffId] = {
+          present: 0,
+        };
+      }
+
+      if (entry.checkIn) {
+        report[entry.staffId].present += 1;
+      }
+    });
+
+    // Add absent calculation
+    Object.keys(report).forEach((staffId) => {
+      report[staffId].absent = totalDays - report[staffId].present;
+    });
+
+    res.json(report);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error generating report");
+  }
+});
 
 /* ================= SERVER ================= */
 
