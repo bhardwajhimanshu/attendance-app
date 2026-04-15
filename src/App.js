@@ -78,70 +78,70 @@ const markAttendance = async (action) => {
   });
 };
 
-  return (
-    <div
+return (
+  <div
+    style={{
+      maxWidth: "400px",
+      margin: "auto",
+      padding: "20px",
+      borderRadius: "10px",
+      boxShadow: "0 0 10px rgba(0,0,0,0.1)",
+      background: "#f9f9f9",
+      textAlign: "center",
+    }}
+  >
+    <h2 style={{ color: "#007bff" }}>
+      🏥 Hospital Attendance System
+    </h2>
+
+    <h3>Welcome {user.name}</h3>
+
+    <button
       style={{
-        maxWidth: "400px",
-        margin: "auto",
-        padding: "20px",
-        borderRadius: "10px",
-        boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-        background: "#f9f9f9",
-        textAlign: "center",
+        background: "#28a745",
+        color: "white",
+        padding: "10px",
+        margin: "5px",
+        border: "none",
+        borderRadius: "5px",
       }}
+      onClick={() => markAttendance("IN")}
     >
-      <h2 style={{ color: "#007bff" }}>
-        🏥 Hospital Attendance System
-      </h2>
+      Check In
+    </button>
 
-      <h3>Welcome {user.name}</h3>
+    <button
+      style={{
+        background: "#dc3545",
+        color: "white",
+        padding: "10px",
+        margin: "5px",
+        border: "none",
+        borderRadius: "5px",
+      }}
+      onClick={() => markAttendance("OUT")}
+    >
+      Check Out
+    </button>
 
-      {/* ✅ FIXED BUTTON */}
-      <button
-        style={{
-          background: "#28a745",
-          color: "white",
-          padding: "10px",
-          margin: "5px",
-          border: "none",
-          borderRadius: "5px",
-        }}
-        onClick={() => markAttendance("IN")}
-      >
-        Check In
-      </button>
+    {/* ✅ Logout INSIDE div */}
+    <button
+      style={{
+        background: "#6c757d",
+        color: "white",
+        padding: "8px",
+        marginTop: "10px",
+        border: "none",
+        borderRadius: "5px",
+      }}
+      onClick={() => setUser(null)}
+    >
+      Logout
+    </button>
 
-      {/* ✅ FIXED BUTTON */}
-      <button
-        style={{
-          background: "#dc3545",
-          color: "white",
-          padding: "10px",
-          margin: "5px",
-          border: "none",
-          borderRadius: "5px",
-        }}
-        onClick={() => markAttendance("OUT")}
-      >
-        Check Out
-      </button>
-
-      {user.role === "admin" && <AdminPanel />}
-    </div>
-<button
-  style={{
-    background: "#6c757d",
-    color: "white",
-    padding: "8px",
-    marginTop: "10px",
-    border: "none",
-    borderRadius: "5px",
-  }}
-  onClick={() => setUser(null)}
->
-  Logout
-</button>
-  );
+    {user.role === "admin" && <AdminPanel />}
+  </div>
+);
 }
 function AdminPanel() {
   const [data, setData] = useState([]);
