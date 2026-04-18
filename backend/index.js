@@ -1,6 +1,12 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const twilio = require("twilio");
+
+const client = new twilio(
+  process.env.TWILIO_SID,
+  process.env.TWILIO_AUTH
+);
 
 const app = express();
 
@@ -102,7 +108,11 @@ await Attendance.findOneAndUpdate(
 		{ $set: update },
 		{ upsert: true, new: true }
 		);
-
+await client.messages.create({
+  body: `🏥 Attendance Update\n\n👤 Staff: ${staffId}\n🕒 Time: ${time}`,
+  from: "whatsapp:+14155238886",
+  to: "whatsapp:+919759497994",
+});
 res.send(`✅ ${action} marked at ${time}`);
 } catch (err) {
 	console.error(err);
