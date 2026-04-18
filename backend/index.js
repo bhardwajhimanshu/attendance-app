@@ -19,7 +19,7 @@ const AttendanceSchema = new mongoose.Schema({
   checkIn: String,
   checkOut: String,
 });
-
+AttendanceSchema.index({ staffId: 1, date: 1 }, { unique: true });
 const Attendance = mongoose.model("Attendance", AttendanceSchema);
 
 /* ================= USERS ================= */
@@ -84,73 +84,75 @@ app.post("/attendance", async (req, res) => {
     const date = new Date().toISOString().split("T")[0];
 
     const time = new Date().toLocaleTimeString("en-IN", {
-      timeZone: "Asia/Kolkata",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
+timeZone: "Asia/Kolkata",
+hour: "2-digit",
+minute: "2-digit",
+hour12: true,
+});
 
-    let record = await Attendance.findOne({ staffId, date });
+// 🔥 Prepare update
+const update =
+action === "IN"
+? { checkIn: time }
+: { checkOut: time };
 
-    if (!record) {
-      record = new Attendance({ staffId, date });
-    }
+// 🔥 Atomic update (NO duplicates possible)
+await Attendance.findOneAndUpdate(
+		{ staffId, date },
+		{ $set: update },
+		{ upsert: true, new: true }
+		);
 
-    if (action === "IN") record.checkIn = time;
-    if (action === "OUT") record.checkOut = time;
-
-    await record.save();
-
-    res.send(`✅ ${action} marked at ${time}`);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Error saving attendance");
-  }
+res.send(`✅ ${action} marked at ${time}`);
+} catch (err) {
+	console.error(err);
+	res.status(500).send("Error saving attendance");
+}
 });
 app.get("/admin", async (req, res) => {
-  try {
-    const data = await Attendance.find();
-    res.json(data);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Error fetching attendance");
-  }
-});
+		try {
+		const data = await Attendance.find();
+		res.json(data);
+		} catch (err) {
+		console.error(err);
+		res.status(500).send("Error fetching attendance");
+		}
+		});
 app.get("/monthly-report", async (req, res) => {
-  try {
-    const { month, year } = req.query;
+		try {
+		const { month, year } = req.query;
 
-    const totalDays = new Date(year, month, 0).getDate();
+		const totalDays = new Date(year, month, 0).getDate();
 
-    const data = await Attendance.find({
-      date: { $regex: `${year}-${month}` } // filter month
-    });
+		const data = await Attendance.find({
+date: { $regex: `${year}-${month}` } // filter month
+});
 
-    const report = {};
+		const report = {};
 
-    data.forEach((entry) => {
-      if (!report[entry.staffId]) {
-        report[entry.staffId] = {
-          present: 0,
-        };
-      }
+		data.forEach((entry) => {
+			if (!report[entry.staffId]) {
+			report[entry.staffId] = {
+present: 0,
+};
+}
 
-      if (entry.checkIn) {
-        report[entry.staffId].present += 1;
-      }
-    });
+if (entry.checkIn) {
+report[entry.staffId].present += 1;
+}
+});
 
-    // Add absent calculation
-    Object.keys(report).forEach((staffId) => {
-      report[staffId].absent = totalDays - report[staffId].present;
-    });
+// Add absent calculation
+Object.keys(report).forEach((staffId) => {
+		report[staffId].absent = totalDays - report[staffId].present;
+		});
 
-    res.json(report);
+res.json(report);
 
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Error generating report");
-  }
+} catch (err) {
+	console.error(err);
+	res.status(500).send("Error generating report");
+}
 });
 
 /* ================= SERVER ================= */
