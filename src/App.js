@@ -149,12 +149,12 @@ function AdminPanel() {
 
   const staffMap = {
     "1": "Himanshu Bhardwaj",
-    "2": "Madhukar Gaur",
+    "2": "Deepak Kumar",
     "3": "Santosh Kumar",
-    "4": "Munesh Singh",
     "5": "Dr. K.K Sharma",
     "6": "Zoya",
     "7": "Somvati",
+    "8": "Pooja" 
   };
 
   const loadData = async () => {

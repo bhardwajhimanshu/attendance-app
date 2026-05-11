@@ -32,9 +32,8 @@ const Attendance = mongoose.model("Attendance", AttendanceSchema);
 
 const users = [
   { id: "1", username: "himanshu", password: "1234", role: "admin", name: "Himanshu Bhardwaj" },
-  { id: "2", username: "madhukar", password: "1234", role: "staff", name: "Madhukar Gaur" },
+  { id: "2", username: "deepak", password: "1234", role: "staff", name: "Deepak kumar" },
   { id: "3", username: "santosh", password: "1234", role: "staff", name: "Santosh Kumar" },
-  { id: "4", username: "munesh", password: "1234", role: "staff", name: "Munesh Singh" },
   { id: "5", username: "kksharma", password: "1234", role: "staff", name: "Dr. K.K Sharma" },
   { id: "6", username: "zoya", password: "1234", role: "staff", name: "Zoya" },
   { id: "7", username: "somvati", password: "1234", role: "staff", name: "Somvati" },
