@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import logo from "./assets/nh-logo.jpg"
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 
@@ -53,95 +54,137 @@ if (!user) {
 return <Dashboard user={user} setUser={setUser} />;
 }
 function Dashboard({ user, setUser }) {
-const markAttendance = async (action) => {
-  navigator.geolocation.getCurrentPosition(async (position) => {
-    const lat = position.coords.latitude;
-    const lng = position.coords.longitude;
 
-    const res = await fetch("https://attendance-app-1p2d.onrender.com/attendance", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+  const markAttendance = async (action) => {
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+
+        const res = await fetch(
+          "https://attendance-app-1p2d.onrender.com/attendance",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              staffId: user.id,
+              action,
+              lat,
+              lng,
+            }),
+          }
+        );
+
+        const data = await res.text();
+        alert(data);
+
       },
-      body: JSON.stringify({
-        staffId: user.id,
-        action,
-        lat,
-        lng,
-      }),
-    });
+      () => {
+        alert("Please allow location access");
+      }
+    );
+  };
 
-    const data = await res.text();
-    alert(data);
-  }, () => {
-    alert("Please allow location access");
-  });
-};
-
-return (
-  <div
-    style={{
-      maxWidth: "400px",
-      margin: "auto",
-      padding: "20px",
-      borderRadius: "10px",
-      boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-      background: "#f9f9f9",
-      textAlign: "center",
-    }}
-  >
-    <h2 style={{ color: "#007bff" }}>
-      🏥 Hospital Attendance System
-    </h2>
-
-    <h3>Welcome {user.name}</h3>
-
-    <button
+  return (
+    <div
       style={{
-        background: "#28a745",
-        color: "white",
-        padding: "10px",
-        margin: "5px",
-        border: "none",
-        borderRadius: "5px",
+        maxWidth: "450px",
+        margin: "auto",
+        padding: "20px",
+        borderRadius: "10px",
+        boxShadow: "0 0 15px rgba(0,0,0,0.1)",
+        textAlign: "center",
+        background: "#fff",
+        position: "relative",
+        overflow: "hidden",
       }}
-      onClick={() => markAttendance("IN")}
     >
-      Check In
-    </button>
 
-    <button
-      style={{
-        background: "#dc3545",
-        color: "white",
-        padding: "10px",
-        margin: "5px",
-        border: "none",
-        borderRadius: "5px",
-      }}
-      onClick={() => markAttendance("OUT")}
-    >
-      Check Out
-    </button>
+      {/* Watermark Background */}
+      <img
+        src={logo}
+        alt="watermark"
+        style={{
+          position: "absolute",
+          width: "80%",
+          opacity: "0.08",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          zIndex: 0
+        }}
+      />
 
-    {/* ✅ Logout INSIDE div */}
-    <button
-      style={{
-        background: "#6c757d",
-        color: "white",
-        padding: "8px",
-        marginTop: "10px",
-        border: "none",
-        borderRadius: "5px",
-      }}
-      onClick={() => setUser(null)}
-    >
-      Logout
-    </button>
+      {/* Main Content */}
+      <div style={{ position: "relative", zIndex: 1 }}>
 
-    {user.role === "admin" && <AdminPanel />}
-  </div>
-);
+        {/* Logo Header */}
+        <img
+          src={logo}
+          alt="NH Medicare Logo"
+          style={{
+            width: "90px",
+            marginBottom: "10px",
+          }}
+        />
+
+        <h2 style={{ color: "#007bff" }}>
+          🏥 NH Medicare Attendance System
+        </h2>
+
+        <h3>Welcome {user.name}</h3>
+
+        <button
+          style={{
+            background: "#28a745",
+            color: "white",
+            padding: "10px",
+            margin: "5px",
+            border: "none",
+            borderRadius: "5px",
+          }}
+          onClick={() => markAttendance("IN")}
+        >
+          Check In
+        </button>
+
+        <button
+          style={{
+            background: "#dc3545",
+            color: "white",
+            padding: "10px",
+            margin: "5px",
+            border: "none",
+            borderRadius: "5px",
+          }}
+          onClick={() => markAttendance("OUT")}
+        >
+          Check Out
+        </button>
+
+        <br />
+
+        <button
+          style={{
+            background: "#6c757d",
+            color: "white",
+            padding: "8px",
+            marginTop: "10px",
+            border: "none",
+            borderRadius: "5px",
+          }}
+          onClick={() => setUser(null)}
+        >
+          Logout
+        </button>
+
+        {user.role === "admin" && <AdminPanel />}
+
+      </div>
+    </div>
+  );
 }
 function AdminPanel() {
   const [data, setData] = useState([]);
@@ -153,8 +196,7 @@ function AdminPanel() {
     "3": "Santosh Kumar",
     "5": "Dr. K.K Sharma",
     "6": "Zoya",
-    "7": "Somvati",
-    "8": "Pooja" 
+    "7": "Somvati"
   };
 
   const loadData = async () => {

@@ -37,7 +37,6 @@ const users = [
   { id: "5", username: "kksharma", password: "1234", role: "staff", name: "Dr. K.K Sharma" },
   { id: "6", username: "zoya", password: "1234", role: "staff", name: "Zoya" },
   { id: "7", username: "somvati", password: "1234", role: "staff", name: "Somvati" },
-  { id: "8", username: "pooja", password: "1234", role: "staff", name: "Pooja" },
 ];
 
 /* ================= ROUTES ================= */
