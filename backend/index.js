@@ -119,15 +119,37 @@ res.send(`✅ ${action} marked at ${time}`);
 	res.status(500).send("Error saving attendance");
 }
 });
+
 app.get("/admin", async (req, res) => {
-		try {
-		const data = await Attendance.find();
-		res.json(data);
-		} catch (err) {
-		console.error(err);
-		res.status(500).send("Error fetching attendance");
-		}
-		});
+  try {
+    const now = new Date();
+
+    const month =
+      req.query.month ||
+      String(now.getMonth() + 1).padStart(2, "0");
+
+    const year =
+      req.query.year ||
+      String(now.getFullYear());
+
+    const data = await Attendance.find({
+      date: {
+        $regex: `^${year}-${month}`
+      }
+    }).sort({
+      date: -1,
+      checkIn: -1
+    });
+
+    res.json(data);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error fetching attendance");
+  }
+});
+
+
 app.get("/monthly-report", async (req, res) => {
 		try {
 		const { month, year } = req.query;
