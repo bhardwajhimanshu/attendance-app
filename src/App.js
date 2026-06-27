@@ -196,7 +196,9 @@ function AdminPanel() {
     "3": "Santosh Kumar",
     "5": "Dr. K.K Sharma",
     "6": "Zoya",
-    "7": "Somvati"
+    "7": "Somvati",
+    "7": "Parul",
+    "7": "Muskan"
   };
 
   const loadData = async () => {
@@ -229,12 +231,13 @@ const downloadExcel = () => {
 
   const staffMap = {
     "1": "Himanshu",
-    "2": "Madhukar Gaur",
+    "2": "Deepak",
     "3": "Santosh Kumar",
-    "4": "Munesh Singh",
     "5": "Dr. K.K Sharma",
     "6": "Zoya",
     "7": "Somvati",
+    "8": "Parul",
+    "9": "Muskan",
   };
 
   const excelData = Object.keys(report).map((id) => ({
